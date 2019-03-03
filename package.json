@@ -1,7 +1,7 @@
 {
-  "name": "easy-peasy-bot",
+  "name": "mopidy-slack",
   "version": "1.0.0",
-  "description": "The awesomest bot evar.",
+  "description": "Mopidy Slack Bot",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -9,24 +9,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DEGoodmanWilson/easy-peasy-bot-app.git"
+    "url": "git+https://github.com/beaufour/easy-peasy-bot"
   },
   "keywords": [
     "slack",
     "bot"
   ],
-  "author": "D.E. Goodman-Wilson",
+  "author": "Allan Beaufour",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/DEGoodmanWilson/easy-peasy-bot-app/issues"
+    "url": "https://github.com/beaufour/easy-peasy-bot"
   },
-  "homepage": "https://github.com/DEGoodmanWilson/easy-peasy-bot-app#readme",
+  "homepage": "https://github.com/DEGoodmanWilson/easy-peasy-bot-app/issues",
   "engines": {
     "node": "5.1.1"
   },
   "dependencies": {
-    "botkit": "0.2.2",
-    "botkit-storage-mongo": "^1.0.2",
-    "mongodb": "^1.4.39"
+    "botkit": "0.2.2"
   }
 }
