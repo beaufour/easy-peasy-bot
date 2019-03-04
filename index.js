@@ -2,6 +2,9 @@
  * A Bot for Slack!
  */
 
+const CHANNEL = 'CGNU86GG7';
+
+const Mopidy = require("mopidy");
 
 /**
  * Define a function for initiating a conversation on installation
@@ -77,6 +80,34 @@ controller.on('rtm_close', function (bot) {
 
 
 /**
+ * Mopidy setup
+ */
+
+const mopidy = new Mopidy();
+mopidy.on("state", console.log);
+mopidy.on("event", console.log);
+mopidy.on('state:online', function () {
+    console.log('Connected to Mopidy');
+});
+
+mopidy.on('event:trackPlaybackStarted', function (event) {
+    var track = event.tl_track.track;
+    var artist = 'Unknown Artist';
+    if (track.artists && track.artists.length) {
+        artist = track.artists[0].name;
+    };
+    var msg = 'Playing: ' + artist + ' - ' + track.name;
+    console.log(msg);
+
+    controller.getBot().say(
+        {
+            text: msg,
+            channel: CHANNEL
+        }
+    );
+});
+
+/**
  * Core bot logic goes here!
  */
 // BEGIN EDITING HERE!
@@ -87,6 +118,11 @@ controller.on('bot_channel_join', function (bot, message) {
 
 controller.hears('hello', 'direct_message', function (bot, message) {
     bot.reply(message, 'Hello!');
+    console.log(controller);
+});
+
+controller.hears('queue', ['direct_message', 'direct_mention'], function (bot, message) {
+    bot.reply(message, 'Here is the queue!');
 });
 
 
