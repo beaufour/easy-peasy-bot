@@ -90,13 +90,17 @@ mopidy.on('state:online', function () {
     console.log('Connected to Mopidy');
 });
 
-mopidy.on('event:trackPlaybackStarted', function (event) {
-    var track = event.tl_track.track;
+var getTrackName = function(track) {
     var artist = 'Unknown Artist';
     if (track.artists && track.artists.length) {
         artist = track.artists[0].name;
     };
-    var msg = 'Playing: ' + artist + ' - ' + track.name;
+    return artist + ' - ' + track.name;
+};
+
+mopidy.on('event:trackPlaybackStarted', function (event) {
+    var track = event.tl_track.track;
+    var msg = 'Playing: ' + getTrackName(track);
     console.log(msg);
 
     controller.getBot().say(
@@ -113,18 +117,93 @@ mopidy.on('event:trackPlaybackStarted', function (event) {
 // BEGIN EDITING HERE!
 
 controller.on('bot_channel_join', function (bot, message) {
-    bot.reply(message, "I'm here!");
+    bot.reply(message, "I'm here to save the day!");
 });
 
 controller.hears('hello', 'direct_message', function (bot, message) {
     bot.reply(message, 'Hello!');
-    console.log(controller);
 });
 
-controller.hears('queue', ['direct_message', 'direct_mention'], function (bot, message) {
-    bot.reply(message, 'Here is the queue!');
+controller.hears(['current', 'current song'], ['direct_message', 'direct_mention'], function (bot, message) {
+    // TODO: ugly, to not use the bot here... but something about the two async functions is not
+    // working for me
+    var channel = message.channel;
+
+    const trackHandler = track => {
+        var msg = 'Nothing';
+        if (track) {
+            msg = getTrackName(track);
+        }
+        console.log('Current track: ', msg);
+        msg = 'Currently playing: ' + msg;
+        controller.getBot().say(
+            {
+                text: msg,
+                channel: channel
+            });
+        return;
+    };
+
+    const failureHandler = () => {
+        console.warn('Could not get current track: ');
+        controller.getBot().say(
+            {
+                text: 'Could not get current track :(',
+                channel: channel
+            });
+    };
+    mopidy.playback.getCurrentTrack().then(trackHandler, failureHandler);
 });
 
+controller.hears(['queue', 'show queue'], ['direct_message', 'direct_mention'], function (bot, message) {
+    // TODO: ugly, to not use the bot here... but something about the two async functions is not
+    // working for me
+    var channel = message.channel;
+
+    const tracksHandler = tracks => {
+        if (!tracks || !tracks.length) {
+            controller.getBot().say(
+                {
+                    text: 'Queue is empty',
+                    channel: channel
+                });
+            return;
+        }
+        console.log(tracks);
+
+        const indexHandler = index => {
+            console.log("Got index: ", index);
+            tracks = tracks.slice(index + 1, index + 6);
+            var msg = '';
+            for (var i = 0; i < tracks.length; ++i) {
+                msg = msg + (i + 1) + '. ' + getTrackName(tracks[i]) + '\n';
+            }
+            controller.getBot().say(
+                {
+                    text: 'Here is the queue:\n' + msg,
+                    channel: channel
+                });
+        };
+
+        mopidy.tracklist.index().then(indexHandler, failureHandler);
+    };
+    const failureHandler = () => {
+        console.warn('Could not get queue: ');
+        controller.getBot().say(
+            {
+                text: 'Could not get queue :(',
+                channel: channel
+            });
+    };
+    mopidy.tracklist.getTracks().then(tracksHandler, failureHandler);
+});
+
+
+controller.hears(['skip', 'next'], ['direct_message', 'direct_mention'], function (bot, message) {
+    console.log('Skipping song');
+    bot.reply(message, 'Skipping current song');
+    mopidy.playback.next();
+});
 
 /**
  * AN example of what could be:
