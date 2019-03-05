@@ -1,5 +1,5 @@
 /**
- * A Bot for Slack!
+ * A Mopidy Bot for Slack
  */
 
 const CHANNEL = 'CGNU86GG7';
@@ -10,7 +10,6 @@ const Mopidy = require("mopidy");
  * Define a function for initiating a conversation on installation
  * With custom integrations, we don't have a way to find out who installed us, so we can't message them :(
  */
-
 function onInstallation(bot, installer) {
     if (installer) {
         bot.startPrivateConversation({user: installer}, function (err, convo) {
@@ -28,7 +27,6 @@ function onInstallation(bot, installer) {
 /**
  * Configure the persistence options
  */
-
 var config = {};
 if (process.env.MONGOLAB_URI) {
     var BotkitStorage = require('botkit-storage-mongo');
@@ -44,7 +42,6 @@ if (process.env.MONGOLAB_URI) {
 /**
  * Are being run as an app or a custom integration? The initialization will differ, depending
  */
-
 if (process.env.TOKEN || process.env.SLACK_TOKEN) {
     //Treat this as a custom integration
     var customIntegration = require('./lib/custom_integrations');
@@ -82,14 +79,19 @@ controller.on('rtm_close', function (bot) {
 /**
  * Mopidy setup
  */
-
 const mopidy = new Mopidy();
-mopidy.on("state", console.log);
-mopidy.on("event", console.log);
+
+// These are just for debugging, as they log every event from Mopidy
+mopidy.on('state', console.log);
+mopidy.on('event', console.log);
+
 mopidy.on('state:online', function () {
     console.log('Connected to Mopidy');
 });
 
+/**
+ * Bot logic
+ */
 var getTrackName = function(track) {
     var artist = 'Unknown Artist';
     if (track.artists && track.artists.length) {
@@ -110,11 +112,6 @@ mopidy.on('event:trackPlaybackStarted', function (event) {
         }
     );
 });
-
-/**
- * Core bot logic goes here!
- */
-// BEGIN EDITING HERE!
 
 controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here to save the day!");
@@ -204,20 +201,3 @@ controller.hears(['skip', 'next'], ['direct_message', 'direct_mention'], functio
     bot.reply(message, 'Skipping current song');
     mopidy.playback.next();
 });
-
-/**
- * AN example of what could be:
- * Any un-handled direct mention gets a reaction and a pat response!
- */
-//controller.on('direct_message,mention,direct_mention', function (bot, message) {
-//    bot.api.reactions.add({
-//        timestamp: message.ts,
-//        channel: message.channel,
-//        name: 'robot_face',
-//    }, function (err) {
-//        if (err) {
-//            console.log(err)
-//        }
-//        bot.reply(message, 'I heard you loud and clear boss.');
-//    });
-//});
