@@ -2,6 +2,7 @@
  * A Mopidy Bot for Slack
  */
 
+// TODO: move to config... or better yet, tell bot through Slack.
 const CHANNEL = 'CGNU86GG7';
 
 const Mopidy = require("mopidy");
