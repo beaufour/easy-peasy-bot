@@ -3,7 +3,7 @@
  */
 
 // TODO: move to config... or better yet, tell bot through Slack.
-const CHANNEL = 'CGNU86GG7';
+const CHANNEL = 'CGVBBLERJ';
 
 const Mopidy = require("mopidy");
 
