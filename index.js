@@ -102,7 +102,20 @@ var getTrackName = function(track) {
 };
 
 mopidy.on('event:trackPlaybackStarted', function (event) {
+    // Event: https://docs.mopidy.com/en/latest/api/models/#mopidy.models.TlTrack
     var track = event.tl_track.track;
+    // TODO: .tlid is the tracklist id, which can be combined with the tlid in:
+    // https://netdj.beaufour.dk/iris/http/get_queue_metadata
+    /* result: {
+         queue_metadata: {
+           tlid_12775: {
+             tlid: 12775,
+             added_by: "beaufour",
+             added_from: "iris:search:all:foo fighters"
+           }
+         }
+       }
+    */
     var msg = 'Playing: ' + getTrackName(track);
     console.log(msg);
 
