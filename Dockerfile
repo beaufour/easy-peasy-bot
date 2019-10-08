@@ -14,7 +14,7 @@ RUN set -ex \
         && apt-get clean \
         && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ~/.cache \
 # Bot
-        && git clone https://github.com/beaufour/mopidy-slack-bot $BOT_HOME \
+        && git clone -b mopidy_support https://github.com/beaufour/mopidy-slack-bot $BOT_HOME \
         && cd $BOT_HOME \
         && npm install \
 # User setup
