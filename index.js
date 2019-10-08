@@ -80,7 +80,10 @@ controller.on('rtm_close', function (bot) {
 /**
  * Mopidy setup
  */
-const mopidy = new Mopidy();
+const mopidy = new Mopidy({
+    // TODO should be a configuration variable
+    webSocketUrl: "ws://mopidy:6680/mopidy/ws/",
+});
 
 // These are just for debugging, as they log every event from Mopidy
 mopidy.on('state', console.log);
